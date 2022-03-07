@@ -18,15 +18,18 @@ import (
 // Fetch downloads the URL and returns the
 // name and length of the local file.
 func fetch(url string) (filename string, n int64, err error) {
+	//input := bufio.NewScanner(os.Stdin)
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", 0, err
 	}
+	//fmt.Println("resp ", resp.Request.URL.Path)
 	defer resp.Body.Close()
 
 	local := path.Base(resp.Request.URL.Path)
 	if local == "/" {
-		local = "index.html"
+		local = "ch5/practice/index.html"
 	}
 	f, err := os.Create(local)
 	if err != nil {
@@ -37,6 +40,9 @@ func fetch(url string) (filename string, n int64, err error) {
 	if closeErr := f.Close(); err == nil {
 		err = closeErr
 	}
+	// for input.Scan(){
+	// 	input.Text()
+	// }
 	return local, n, err
 }
 
@@ -44,11 +50,13 @@ func fetch(url string) (filename string, n int64, err error) {
 
 func main() {
 	for _, url := range os.Args[1:] {
+		// fmt.Println("url : ",url)
 		local, n, err := fetch(url)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "fetch %s: %v\n", url, err)
-			continue
+
 		}
 		fmt.Fprintf(os.Stderr, "%s => %s (%d bytes).\n", url, local, n)
+
 	}
 }

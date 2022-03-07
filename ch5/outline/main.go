@@ -15,7 +15,12 @@ import (
 
 //!+
 func main() {
-	doc, err := html.Parse(os.Stdin)
+	f,ferr := os.Open("/home/tribhuvan/workspace/lab/gopl.io/ch5/practice/index.html")
+	if ferr != nil {
+		fmt.Fprintf(os.Stderr, "findlinks1: %v\n", ferr)
+		//os.Exit(1)
+	}
+	doc, err := html.Parse(f)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "outline: %v\n", err)
 		os.Exit(1)
