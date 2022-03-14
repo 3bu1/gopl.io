@@ -31,14 +31,60 @@ var prereqs = map[string][]string{
 	"operating systems":     {"data structures", "computer organization"},
 	"programming languages": {"data structures", "computer organization"},
 }
+var prereqsWithMap = map[string]map[string]bool{
+    "algorithms": {"data structures": true},
+    "calculus":   {"linear algebra": true},
+
+    "compilers": {
+        "data structures":       true,
+        "formal languages":      true,
+        "computer organization": true,
+    },
+	
+    "data structures":       {"discrete math": true},
+    "databases":             {"data structures": true},
+    "discrete math":         {"intro to programming": true},
+    "formal languages":      {"discrete math": true},
+    "networks":              {"operating systems": true},
+    "operating systems":     {"data structures": true, "computer organization": true},
+    "programming languages": {"data structures": true, "computer organization": true},
+}
 
 //!-table
 
 //!+main
 func main() {
-	for i, course := range topoSort(prereqs) {
-		fmt.Printf("%d:\t%s\n", i+1, course)
+
+	for i, course := range topSortUsingMap(prereqsWithMap){
+		fmt.Printf("%d:\t%s\n", i, course)
 	}
+
+	// for i, course := range topoSort(prereqs) {
+	// 	fmt.Printf("%d:\t%s\n", i+1, course)
+	// }
+}
+
+func topSortUsingMap(m map[string]map[string]bool) []string {
+	var result []string
+	seen := make(map[string]bool)
+    var visitAll func(items map[string]bool)
+
+    visitAll = func(items map[string]bool) {
+        for item, _ := range items {
+            if !seen[item] {
+                seen[item] = true
+                visitAll(m[item])
+                result = append(result, item)
+            }
+        }
+    }
+
+    var keys = make(map[string]bool)
+    for key := range m {
+        keys[key] = true
+    }
+    visitAll(keys)
+	return result
 }
 
 func topoSort(m map[string][]string) []string {
@@ -65,5 +111,9 @@ func topoSort(m map[string][]string) []string {
 	visitAll(keys)
 	return order
 }
+
+
+
+
 
 //!-main
