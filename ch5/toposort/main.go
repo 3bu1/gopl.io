@@ -22,7 +22,7 @@ var prereqs = map[string][]string{
 		"formal languages",
 		"computer organization",
 	},
-
+	"linear algebra":        {"calculus"},
 	"data structures":       {"discrete math"},
 	"databases":             {"data structures"},
 	"discrete math":         {"intro to programming"},
@@ -40,7 +40,7 @@ var prereqsWithMap = map[string]map[string]bool{
         "formal languages":      true,
         "computer organization": true,
     },
-	
+
     "data structures":       {"discrete math": true},
     "databases":             {"data structures": true},
     "discrete math":         {"intro to programming": true},
@@ -59,9 +59,9 @@ func main() {
 		fmt.Printf("%d:\t%s\n", i, course)
 	}
 
-	// for i, course := range topoSort(prereqs) {
-	// 	fmt.Printf("%d:\t%s\n", i+1, course)
-	// }
+	for i, course := range topoSort(prereqs) {
+		fmt.Printf("%d:\t%s\n", i+1, course)
+	}
 }
 
 func topSortUsingMap(m map[string]map[string]bool) []string {
