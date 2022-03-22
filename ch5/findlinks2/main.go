@@ -19,18 +19,45 @@ import (
 )
 
 // visit appends to links each link found in n, and returns the result.
-func visit(links []string, n *html.Node) []string {
-	if n.Type == html.ElementNode && n.Data == "a" {
+func visitAllNodes(links []string, n *html.Node) []string {
+	if n.Type == html.ElementNode &&  (n.Data == "a" || n.Data == "link" ) {
 		for _, a := range n.Attr {
 			if a.Key == "href" {
+				fmt.Printf("n.Data: %s, a.val: %s \n", n.Data,a.Val)
 				links = append(links, a.Val)
 			}
 		}
 	}
+	if n.Type == html.ElementNode && (n.Data == "img" || n.Data == "script") {
+		for _, a := range n.Attr {
+			if a.Key == "src" {
+				fmt.Printf("n.Data: %s, a.val: %s \n", n.Data,a.Val)
+				links = append(links, a.Val)
+			}
+		}
+	}
+
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		links = visit(links, c)
+		links = visitAllNodes(links, c)
 	}
 	return links
+}
+
+var mapping = map[string]string{"a": "href", "img": "src", "script": "src", "link": "href"}
+
+// visit appends to links each link found in n and returns the result.
+func visit(target string, links []string, n *html.Node) []string {
+    if n.Type == html.ElementNode && n.Data == target {
+        for _, a := range n.Attr {
+            if a.Key == mapping[target] {
+                links = append(links, a.Val)
+            }
+        }
+    }
+    for c := n.FirstChild; c != nil; c = c.NextSibling {
+        links = visit(target, links, c)
+    }
+    return links
 }
 
 //!+
@@ -50,6 +77,8 @@ func main() {
 // findLinks performs an HTTP GET request for url, parses the
 // response as HTML, and extracts and returns the links.
 func findLinks(url string) ([]string, error) {
+	result := []string{}
+	visitAllNodesFlag:=true 
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -63,7 +92,13 @@ func findLinks(url string) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parsing %s as HTML: %v", url, err)
 	}
-	return visit(nil, doc), nil
+	if visitAllNodesFlag {
+		result = visitAllNodes(nil,doc)		
+	}else{
+		result = visit("img",nil, doc)
+	}
+	
+	return result,err
 }
 
 //!-

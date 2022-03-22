@@ -34,9 +34,21 @@ func Extract(url string) ([]string, error) {
 
 	var links []string
 	visitNode := func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" {
+		if n.Type == html.ElementNode && (n.Data == "a" || n.Data == "link" ) {
 			for _, a := range n.Attr {
 				if a.Key != "href" {
+					continue
+				}
+				link, err := resp.Request.URL.Parse(a.Val)
+				if err != nil {
+					continue // ignore bad URLs
+				}
+				links = append(links, link.String())
+			}
+		}
+		if n.Type == html.ElementNode && (n.Data == "img" || n.Data == "link") {
+			for _, a := range n.Attr {
+				if a.Key != "src" {
 					continue
 				}
 				link, err := resp.Request.URL.Parse(a.Val)

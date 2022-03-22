@@ -7,7 +7,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"runtime"
 )
@@ -15,7 +14,7 @@ import (
 //!+
 func main() {
 	defer printStack()
-	f(3)
+	f(0)
 }
 
 func printStack() {
@@ -27,9 +26,12 @@ func printStack() {
 //!-
 
 func f(x int) {
-	fmt.Printf("f(%d)\n", x+0/x) // panics if x == 0
-	defer fmt.Printf("defer %d\n", x)
-	f(x - 1)
+	if x == 0 {
+		panic("x is 0")
+	}
+	//fmt.Printf("f(%d)\n", x+0/x) // panics if x == 0
+	//defer fmt.Printf("defer %d\n", x)
+	//f(x - 1)
 }
 
 /*

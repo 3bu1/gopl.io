@@ -15,14 +15,23 @@ import (
 )
 
 func main() {
-	doc, err := html.Parse(os.Stdin)
+	//fmt.Println("os.Stdin ", &os.Stdin)
+	f,ferr := os.Open("/home/tribhuvan/workspace/lab/gopl.io/ch5/practice/index.html")
+	if ferr != nil {
+		fmt.Fprintf(os.Stderr, "findlinks1: %v\n", ferr)
+		//os.Exit(1)
+	}
+
+	doc, err := html.Parse(f)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "findlinks1: %v\n", err)
-		os.Exit(1)
+		//os.Exit(1)
 	}
-	for _, link := range visit(nil, doc) {
-		fmt.Println(link)
-	}
+	// for _, link := range  {
+	// 	fmt.Println(link)
+	// }
+	linkString := visit(nil, doc)
+		fmt.Printf("linkString %s", linkString)
 }
 
 //!-main
@@ -30,6 +39,7 @@ func main() {
 //!+visit
 // visit appends to links each link found in n and returns the result.
 func visit(links []string, n *html.Node) []string {
+	
 	if n.Type == html.ElementNode && n.Data == "a" {
 		for _, a := range n.Attr {
 			if a.Key == "href" {
@@ -37,8 +47,13 @@ func visit(links []string, n *html.Node) []string {
 			}
 		}
 	}
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		links = visit(links, c)
+
+	if n.FirstChild != nil {
+
+		links = visit(links, n.FirstChild)
+	}
+	if 	n.NextSibling != nil{
+		links = visit(links, n.NextSibling)
 	}
 	return links
 }
