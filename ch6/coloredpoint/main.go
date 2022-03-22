@@ -8,11 +8,11 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 	"math"
 )
 
 //!+decl
-import "image/color"
 
 type Point struct{ X, Y float64 }
 
@@ -40,11 +40,14 @@ func main() {
 	blue := color.RGBA{0, 0, 255, 255}
 	var p = ColoredPoint{Point{1, 1}, red}
 	var q = ColoredPoint{Point{5, 4}, blue}
-	fmt.Println(p.Distance(q.Point)) // "5"
+	fmt.Println("ColoredPoint distance",p.Distance(q.Point)) // "5"
 	p.ScaleBy(2)
 	q.ScaleBy(2)
 	fmt.Println(p.Distance(q.Point)) // "10"
 	//!-main
+	var ptemp = &Point{1,2}
+	var qtemp = &Point{3,4}
+	fmt.Println("ptemp.Distance(qtemp) ",(*ptemp).Distance(*qtemp))
 }
 
 /*
@@ -59,7 +62,7 @@ func init() {
 	q := Point{4, 6}
 
 	distance := Point.Distance   // method expression
-	fmt.Println(distance(p, q))  // "5"
+	fmt.Println("distance(p, q) ",distance(p, q))  // "5"
 	fmt.Printf("%T\n", distance) // "func(Point, Point) float64"
 
 	scale := (*Point).ScaleBy
