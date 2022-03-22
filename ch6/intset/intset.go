@@ -94,3 +94,9 @@ func (s *IntSet) Clear() {
     s.count = 0
 }
 
+
+func (s *IntSet) AddAll(x ...int) {
+    for _, i := range x {
+        s.Add(i)
+    }
+}
