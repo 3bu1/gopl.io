@@ -17,10 +17,13 @@ import (
 // Its zero value represents the empty set.
 type IntSet struct {
 	words []uint64
+	count int
 }
 
 // Has reports whether the set contains the non-negative value x.
 func (s *IntSet) Has(x int) bool {
+	// blue := color.RGBA{0, 0, 255, 255}
+	// var q = ColoredPoint{Point{5, 4}, blue}
 	word, bit := x/64, uint(x%64)
 	return word < len(s.words) && s.words[word]&(1<<bit) != 0
 }
@@ -32,7 +35,10 @@ func (s *IntSet) Add(x int) {
 		s.words = append(s.words, 0)
 	}
 	s.words[word] |= 1 << bit
+	
+
 }
+
 
 // UnionWith sets s to the union of s and t.
 func (s *IntSet) UnionWith(t *IntSet) {
@@ -71,3 +77,26 @@ func (s *IntSet) String() string {
 }
 
 //!-string
+func (s *IntSet) len() int  {
+	return len(s.words)
+}
+
+
+func (s *IntSet) Remove(x int) {
+    if s.Has(x) {
+        word, bit := x/64, uint(x%64)
+        s.words[word] &^= 1 << bit
+    }
+}
+
+func (s *IntSet) Clear() {
+    s.words = nil
+    s.count = 0
+}
+
+
+func (s *IntSet) AddAll(x ...int) {
+    for _, i := range x {
+        s.Add(i)
+    }
+}

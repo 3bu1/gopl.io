@@ -11,8 +11,11 @@ func Example_one() {
 	x.Add(1)
 	x.Add(144)
 	x.Add(9)
-	fmt.Println(x.String()) // "{1 9 144}"
-
+	fmt.Println(x.String(), "length: ", x.len()) // "{1 9 144}"
+	x.Remove(9)
+	fmt.Println(x.String(), "length: ", x.len()) // "{1 9 144}"
+	x.Clear()
+	fmt.Println(x.String(), "length: ", x.len()) // "{1 9 144}"
 	y.Add(9)
 	y.Add(42)
 	fmt.Println(y.String()) // "{9 42}"
