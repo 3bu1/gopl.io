@@ -7,7 +7,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"strings"
 )
 
 //!+bytecounter
@@ -21,6 +23,56 @@ func (c *ByteCounter) Write(p []byte) (int, error) {
 
 //!-bytecounter
 
+
+type WordCounter int
+type LineCounter int
+type ScanFunc func (p []byte, EOF bool) (advance int, token []byte, err error)
+
+func ScanBytes(p []byte, fn ScanFunc) (cnt int)  {
+	for true {
+		advance, token, _ := fn(p, true)
+		if len(token) == 0{
+			break
+		}
+		p= p[advance:]
+		cnt++
+	}
+	return cnt
+}
+
+func (w *WordCounter)Write(p []byte) (int,error)  {
+	cnt := ScanBytes(p, bufio.ScanWords)
+	*w += WordCounter(cnt)
+	return cnt, nil
+}
+
+func (l *LineCounter)Write(p []byte)(int, error)  {
+	cnt := ScanBytes(p, bufio.ScanLines)
+	*l += LineCounter(cnt)
+	return cnt, nil
+}
+
+func (wordC *WordCounter) StringCount(p string) (int, error)  {
+	pword := strings.Split(p, " ")
+	pcount := 0
+	errorVar := fmt.Errorf("input cant be empty") 
+	if p == "" {
+		return 0, errorVar
+	}
+	for _, pv := range pword {
+		if pv != "" {
+			pcount++
+		}
+
+	}
+	*wordC = WordCounter(pcount)
+	return pcount, errorVar
+}
+
+func (c WordCounter) String() string {
+    return fmt.Sprintf("contains %d words", c)
+}
+
 func main() {
 	//!+main
 	var c ByteCounter
@@ -29,7 +81,36 @@ func main() {
 
 	c = 0 // reset the counter
 	var name = "Dolly"
+	fmt.Println("len(name)",len(name))
 	fmt.Fprintf(&c, "hello, %s", name)
 	fmt.Println(c) // "12", = len("hello, Dolly")
-	//!-main
+	var w WordCounter
+	//w.StringCount("hello worldHi")
+	fmt.Fprintf(&w, "this is a sentence")
+	fmt.Println("word length",w)
+	w = 0
+    fmt.Fprintf(&w, "This")
+    fmt.Println(w)
+//	fmt.Fprintf(&w, "This is an sentence.")
+  //  fmt.Println(c)
+	
+  var l LineCounter
+  fmt.Println(l)
+
+  fmt.Fprintf(&l, `This is another\n
+line`)
+  fmt.Println(l)
+
+  l = 0
+  fmt.Fprintf(&l, "This is another\nline")
+  fmt.Println(l)
+
+  fmt.Fprintf(&l, "This is one line")
+  fmt.Println(l)
+
+ 
+  //!-main
+
+
+
 }
