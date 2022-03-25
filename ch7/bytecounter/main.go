@@ -9,6 +9,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -111,6 +112,41 @@ line`)
  
   //!-main
 
+var cwx CounterWriter
+	fmt.Println(cwx)
+	//fmt.Fprintf(cwx.writer, "this is counterwriter writing !!")
+	cwx.Write([]byte("this is counterwriter writing !!"))
+	fmt.Println(cwx)
+}
 
+// type countingWriter int64
 
+// func (cw *countingWriter) CountingWriter(w io.Writer)(io.Writer, *int64)  {
+
+// 	nw := bufio.NewWriter(w)
+// 	var c ByteCounter
+// 	c.Write([]byte("hello"))
+// 	cw = countingWriter(len(w))
+// 	// cnt := ScanBytes(w, bufio.NewWriter)
+// 	// *cw += countingWriter(cnt)
+	
+// 	return nw,(*int64)(cw)
+// }
+
+type CounterWriter struct {
+    counter int64
+    writer  io.Writer
+}
+
+// must be pointer type in order to count
+func (cw *CounterWriter) Write(p []byte) (int, error) {
+    cw.counter += int64(len(p))
+    return cw.writer.Write(p)
+}
+
+// newWriter is a Writer Wrapper, return original Writer
+// and a Counter which record bytes have written
+func CountingWriter(w io.Writer) (io.Writer, *int64) {
+    cw := CounterWriter{0, w}
+    return &cw, &cw.counter
 }
