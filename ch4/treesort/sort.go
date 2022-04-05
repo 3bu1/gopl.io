@@ -7,7 +7,7 @@
 package treesort
 
 //!+
-type tree struct {
+type tree struct { 
 	value       int
 	left, right *tree
 }
